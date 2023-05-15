@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+<!--    <constant name="struts.devMode" value="true" />-->
+    <constant name="struts.action.excludePattern" value=".*\/websocket\/.*"/>
+
+    <package name="Start" namespace="/" extends="struts-default">
+        <interceptors>
+            <interceptor name="userSession" class="helper.AuthInterceptor" />
+        </interceptors>
+
+        <action name="login">
+            <result>/login.html</result>
+        </action>
+    </package>
+
+    <package name="Main" extends="json-default,struts-default">
+
+        <result-types>
+            <result-type name="json" class="org.apache.struts2.json.JSONResult">
+                <param name="noCache">true</param>
+                <param name="excludeNullProperties">true</param>
+                <param name="enableGZIP">true</param>
+            </result-type>
+        </result-types>
+
+        <interceptors>
+            <interceptor name="userSession" class="helper.AuthInterceptor" />
+            <interceptor-stack name="loginSession">
+                <interceptor-ref name="userSession"/>
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>
+
+        <global-results>
+            <result name="login" type="redirect">/login.html</result>
+        </global-results>
+
+
+        <action name="">
+            <interceptor-ref name="loginSession"/>
+            <result>/index.html</result>
+        </action>
+
+<!--        Authentication-->
+        <action name="authenticate" class="action.LoginAction" method="login">
+            <result name="success" type="json" />
+        </action>
+        <action name="logout" class="action.LoginAction" method="logout">
+            <result name="success" type="json" />
+        </action>
+
+<!--        Discovery Actions-->
+        <action name="getDiscoveryDevices" class="action.MonitorDiscoveryAction" method="getAllDiscoveryDevices">
+            <interceptor-ref name="loginSession"/>
+            <result name="success" type="json" />
+        </action>
+        <action name="getSingleDiscoveryDevice" class="action.MonitorDiscoveryAction" method="getSingleDiscoveryDevice">
+            <interceptor-ref name="loginSession"/>
+            <result name="success" type="json" />
+        </action>
+        <action name="deleteDiscoveryDevice" class="action.MonitorDiscoveryAction" method="deleteDiscoveryDevice">
+            <interceptor-ref name="loginSession"/>
+            <result name="success" type="json" />
+        </action>
+        <action name="addDiscoveryDevice" class="action.MonitorDiscoveryAction" method="addDiscoveryDevice">
+            <interceptor-ref name="loginSession"/>
+            <result name="success" type="json" />
+        </action>
+        <action name="updateDiscoveryDevice" class="action.MonitorDiscoveryAction" method="updateDiscoveryDevice">
+            <interceptor-ref name="loginSession"/>
+            <result name="success" type="json" />
+        </action>
+
+<!--        Provision-->
+        <action name="checkProvision" class="action.PollingAction" method="discovery">
+            <interceptor-ref name="loginSession"/>
+            <result name="success" type="json" />
+        </action>
+        <action name="putProvision" class="action.PollingAction" method="putDeviceForMonitoring">
+            <interceptor-ref name="loginSession"/>
+            <result name="success" type="json" />
+        </action>
+
+<!--        Monitor-->
+        <action name="getMonitorDevices" class="action.MonitorTabAction" method="getMonitorDevices">
+            <interceptor-ref name="loginSession"/>
+            <result name="success" type="json" />
+        </action>
+        <action name="deleteMonitorDevice" class="action.MonitorTabAction" method="deleteMonitorDevice">
+            <interceptor-ref name="loginSession"/>
+            <result name="success" type="json" />
+        </action>
+
+<!--        Metric Data-->
+        <action name="getMetrics" class="action.MonitorDataActions" method="getMonitorData">
+            <interceptor-ref name="loginSession"/>
+            <result name="success" type="json" />
+        </action>
+
+        <action name="deviceStatus" class="action.MonitorDataActions" method="checkDeviceStatus">
+            <interceptor-ref name="loginSession"/>
+            <result name="success" type="json" />
+        </action>
+
+        <action name="pollDevice" class="action.MonitorDataActions" method="pollDevice">
+            <interceptor-ref name="loginSession"/>
+            <result name="success" type="json" />
+        </action>
+
+<!--        Dashboard data-->
+        <action name="getDashboard" class="action.DashboardAction" method="getDashboardData">
+            <interceptor-ref name="loginSession"/>
+            <result name="success" type="json" />
+        </action>
+
+    </package>
+</struts>
